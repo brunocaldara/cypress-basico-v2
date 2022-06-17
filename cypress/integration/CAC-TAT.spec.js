@@ -106,7 +106,7 @@ describe('Central de Atendimento ao Cliente TAT', () => {
         cy.get('#file-upload').should('be.visible').selectFile('cypress/fixtures/example.json', { action: 'drag-drop' });
     });
 
-    it.only('seleciona um arquivo utilizando uma fixture para a qual foi dada um alias', () => {
+    it('seleciona um arquivo utilizando uma fixture para a qual foi dada um alias', () => {
         const fileName = 'example.json';
         
         cy.fixture(fileName).as('sampleFile');
@@ -114,5 +114,21 @@ describe('Central de Atendimento ao Cliente TAT', () => {
         cy.get('input[type="file"]').selectFile('@sampleFile').should(file => {
             expect(file[0].files[0].name).to.equal(fileName);
         });
+    });
+
+    it('verifica que a política de privacidade abre em outra aba sem a necessidade de um clique', () => {
+        cy.get('#privacy a').should('have.attr', 'target', '_blank');
+    });
+
+    it('acessa a página da política de privacidade removendo o target e então clicanco no link', () => {
+        cy.get('a[href="privacy.html"]').invoke('removeAttr', 'target').click();
+
+        cy.contains('Talking About Testing').should('be.visible');
+    });
+
+    it.only('testa a página da política de privavidade de forma independente', () => {
+        cy.visit('./src/privacy.html');     
+
+        cy.contains('Talking About Testing').should('be.visible');
     });
 });
