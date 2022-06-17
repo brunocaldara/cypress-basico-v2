@@ -107,6 +107,12 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     });
 
     it.only('seleciona um arquivo utilizando uma fixture para a qual foi dada um alias', () => {
+        const fileName = 'example.json';
         
+        cy.fixture(fileName).as('sampleFile');
+
+        cy.get('input[type="file"]').selectFile('@sampleFile').should(file => {
+            expect(file[0].files[0].name).to.equal(fileName);
+        });
     });
 });
