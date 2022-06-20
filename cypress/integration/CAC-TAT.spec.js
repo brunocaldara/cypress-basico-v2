@@ -1,6 +1,8 @@
 /// <reference types="cypress" />
 
 describe('Central de Atendimento ao Cliente TAT', () => {
+    const THREE_SECONDS_IN_MS = 3000;
+    
     beforeEach(() => {
         cy.visit('./src/index.html');
     });
@@ -11,6 +13,7 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     });
 
     it('preenche os campos obrigatórios e envia o formulário', () => {
+        cy.clock(); //trava o tempo do navegador
         cy.get('#firstName').type('Bruno');
         cy.get('#lastName').type('Caldara');
         cy.get('#email').type('brunocaldara@gmail.com');
@@ -18,17 +21,28 @@ describe('Central de Atendimento ao Cliente TAT', () => {
         cy.get('#email-checkbox').check();
         cy.get('#open-text-area').type('Curso de Cypress Básico', { delay: 0 });
         cy.get('button[type="submit"]').click();
+
         cy.get('.success').should('be.visible');
+
+        cy.tick(THREE_SECONDS_IN_MS);
+
+        cy.get('.success').should('not.be.visible');
     });
 
     it('exibe mensagem de erro ao submeter o formulário com um email com formatação inválida', () => {
+        cy.clock()
         cy.get('#firstName').type('Bruno');
         cy.get('#lastName').type('Caldara');
         cy.get('#email').type('brunocaldara');
         cy.get('#phone').type('123456789');
         cy.get('#open-text-area').type('Curso de Cypress Básico', { delay: 0 });
         cy.get('button[type="submit"]').click();
+        
         cy.get('.error').should('be.visible');
+
+        cy.tick(THREE_SECONDS_IN_MS);
+
+        cy.get('.error').should('not.be.visible');
     });
 
     it('campo telefone continua vazio quando preenchido com valor não numérico', () => {
@@ -36,6 +50,7 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     });
 
     it('exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário', () => {
+        cy.clock();
         cy.get('#firstName').type('Bruno');
         cy.get('#lastName').type('Caldara');
         cy.get('#email').type('brunocaldara@gmail.com');
@@ -43,7 +58,12 @@ describe('Central de Atendimento ao Cliente TAT', () => {
         cy.get('#product').type('Youtube');
         cy.get('#phone-checkbox').click();
         cy.get('button[type="submit"]').click();
+        
         cy.get('.error').should('be.visible');
+
+        cy.tick(THREE_SECONDS_IN_MS);
+
+        cy.get('.error').should('not.be.visible');
     });
 
     it('preenche e limpa os campos nome, sobrenome, email e telefone', () => {
@@ -51,8 +71,14 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     });
 
     it('envia o formuário com sucesso usando um comando customizado', () => {
+        cy.clock();
         cy.fillMandatoryFieldsAndSubmit();
+        
         cy.get('.success').should('be.visible');
+
+        cy.tick(THREE_SECONDS_IN_MS);
+
+        cy.get('.success').should('not.be.visible');
     });
 
     it('seleciona um produto (YouTube) por seu texto', () => {
